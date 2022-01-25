@@ -182,6 +182,22 @@ $ac_distutils_result])
 	fi
 
 	#
+	# Check if you have sysconfig, else fail
+	#
+	AC_MSG_CHECKING([for the sysconfig Python package])
+	if ac_sysconfig_result=`$PYTHON -c "import sysconfig" 2>&1`; then
+		AC_MSG_RESULT([yes])
+	else
+		AC_MSG_RESULT([no])
+		m4_ifvaln([$2],[$2],[
+			AC_MSG_ERROR([cannot import Python module "sysconfig".
+Please check your Python installation. The error was:
+$ac_sysconfig_result])
+			PYTHON_VERSION=""
+		])
+	fi
+
+	#
 	# Check for Python include path
 	#
 	AC_MSG_CHECKING([for Python include path])
@@ -213,7 +229,7 @@ $ac_distutils_result])
 
 # join all versioning strings, on some systems
 # major/minor numbers could be in different list elements
-from distutils.sysconfig import *
+from sysconfig import *
 e = get_config_var('VERSION')
 if e is not None:
 	print(e)
@@ -236,8 +252,8 @@ EOD`
 		ac_python_libdir=`cat<<EOD | $PYTHON -
 
 # There should be only one
-import distutils.sysconfig
-e = distutils.sysconfig.get_config_var('LIBDIR')
+import sysconfig
+e = sysconfig.get_config_var('LIBDIR')
 if e is not None:
 	print (e)
 EOD`
@@ -245,8 +261,8 @@ EOD`
 		# Now, for the library:
 		ac_python_library=`cat<<EOD | $PYTHON -
 
-import distutils.sysconfig
-c = distutils.sysconfig.get_config_vars()
+import sysconfig
+c = sysconfig.get_config_vars()
 if 'LDVERSION' in c:
 	print ('python'+c[['LDVERSION']])
 else:
@@ -299,8 +315,8 @@ EOD`
 	#
 	AC_MSG_CHECKING(python extra libraries)
 	if test -z "$PYTHON_EXTRA_LIBS"; then
-	   PYTHON_EXTRA_LIBS=`$PYTHON -c "import distutils.sysconfig; \
-                conf = distutils.sysconfig.get_config_var; \
+	   PYTHON_EXTRA_LIBS=`$PYTHON -c "import sysconfig; \
+                conf = sysconfig.get_config_var; \
                 print (conf('LIBS') + ' ' + conf('SYSLIBS'))"`
 	fi
 	AC_MSG_RESULT([$PYTHON_EXTRA_LIBS])
@@ -311,8 +327,8 @@ EOD`
 	#
 	AC_MSG_CHECKING(python extra linking flags)
 	if test -z "$PYTHON_EXTRA_LDFLAGS"; then
-		PYTHON_EXTRA_LDFLAGS=`$PYTHON -c "import distutils.sysconfig; \
-			conf = distutils.sysconfig.get_config_var; \
+		PYTHON_EXTRA_LDFLAGS=`$PYTHON -c "import sysconfig; \
+			conf = sysconfig.get_config_var; \
 			print (conf('LINKFORSHARED'))"`
 	fi
 	AC_MSG_RESULT([$PYTHON_EXTRA_LDFLAGS])
