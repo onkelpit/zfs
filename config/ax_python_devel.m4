@@ -202,10 +202,10 @@ $ac_sysconfig_result])
 	#
 	AC_MSG_CHECKING([for Python include path])
 	if test -z "$PYTHON_CPPFLAGS"; then
-		python_path=`$PYTHON -c "import distutils.sysconfig; \
-			print (distutils.sysconfig.get_python_inc ());"`
-		plat_python_path=`$PYTHON -c "import distutils.sysconfig; \
-			print (distutils.sysconfig.get_python_inc (plat_specific=1));"`
+		python_path=`$PYTHON -c "import sysconfig; \
+			print (sysconfig.get_path('include'));"`
+		plat_python_path=`$PYTHON -c "import sysconfig; \
+			print (sysconfig.get_path('include'));"`
 		if test -n "${python_path}"; then
 			if test "${plat_python_path}" != "${python_path}"; then
 				python_path="-I$python_path -I$plat_python_path"
@@ -281,7 +281,7 @@ EOD`
 		else
 			# old way: use libpython from python_configdir
 			ac_python_libdir=`$PYTHON -c \
-			  "from distutils.sysconfig import get_python_lib as f; \
+			  "from sysconfig import get_path('pureLib') as f; \
 			  import os; \
 			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
 			PYTHON_LIBS="-L$ac_python_libdir -lpython$ac_python_version"
@@ -304,8 +304,8 @@ EOD`
 	#
 	AC_MSG_CHECKING([for Python site-packages path])
 	if test -z "$PYTHON_SITE_PKG"; then
-		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
-			print (distutils.sysconfig.get_python_lib(0,0));"`
+		PYTHON_SITE_PKG=`$PYTHON -c "import sysconfig; \
+			print (sysconfig.get_path(pureLib));"`
 	fi
 	AC_MSG_RESULT([$PYTHON_SITE_PKG])
 	AC_SUBST([PYTHON_SITE_PKG])
